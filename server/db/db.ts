@@ -3,7 +3,7 @@ import { RosterData } from '../../models/models'
 
 const knex = Knex // Assuming you have a knexfile.js configured
 
-export async function fetchRoster(): Promise<RosterData> {
+export async function fetchRosterDB(): Promise<RosterData> {
   try {
     const roster = await knex('roster').where({ id: 1 }).first() // Assuming only one roster
     return roster.data // Assuming the roster data is stored in a JSON column
@@ -12,7 +12,7 @@ export async function fetchRoster(): Promise<RosterData> {
   }
 }
 
-export async function saveRoster(rosterData: RosterData) {
+export async function saveRosterDB(rosterData: RosterData) {
   try {
     await knex('roster').where({ id: 1 }).update({ data: rosterData })
   } catch (error) {
