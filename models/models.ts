@@ -13,7 +13,7 @@ export interface Shift {
   available: boolean
 }
 
-export interface Roster {
+export interface RosterData {
   id: number
   startDate: Date
   shifts: Shift[]

@@ -1,18 +1,19 @@
-import * as Path from 'node:path'
-
 import express from 'express'
+// import * from 'node:path'; // For path resolution
 
-const server = express()
-server.use(express.json())
+import rosterRoutes from './routes/roster.ts' // Import the roster routes
 
-// ADD YOUR API ROUTES HERE
+const app = express()
+app.use(express.json()) // Parse incoming JSON data
 
+// Mount your roster routes
+app.use('/api/v1/roster', rosterRoutes) // Assuming v1 API version
+
+// ... other routes or middleware (if applicable)
+
+// Production environment serving static assets
 if (process.env.NODE_ENV === 'production') {
-  server.use(express.static(Path.resolve('public')))
-  server.use('/assets', express.static(Path.resolve('./dist/assets')))
-  server.get('*', (req, res) => {
-    res.sendFile(Path.resolve('./dist/index.html'))
-  })
+  // ... serving static content logic (if needed)
 }
 
-export default server
+export default app
