@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
+    "baseUrl": "./src",
+    "paths": {
+      "@utils/*": ["src/utils/*"]},
     "types": ["vite/client"],
     "target": "es2020", 
     "jsx": "react-jsx",
