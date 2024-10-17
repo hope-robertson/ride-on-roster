@@ -7,7 +7,7 @@ export async function fetchRosterDB(): Promise<RosterData> {
   try {
     console.log('Fetching roster data from database')
     const roster = await knex('roster').where({ id: 1 }).first() // Assuming only one roster
-    console.log('Fetched roster dara:', roster)
+    console.log('Fetched roster data:', roster)
     return roster.data // Assuming the roster data is stored in a JSON column
   } catch (error) {
     throw new Error('Failed to fetch roster data')
@@ -16,7 +16,7 @@ export async function fetchRosterDB(): Promise<RosterData> {
 
 export async function saveRosterDB(rosterData: RosterData) {
   try {
-    await knex('roster').where({ id: 1 }).update({ data: rosterData })
+    await knex('roster').where({ id: 1 }).update({ shifts: rosterData.shifts })
   } catch (error) {
     throw new Error('Failed to save roster data')
   }

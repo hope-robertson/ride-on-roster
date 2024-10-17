@@ -1,69 +1,46 @@
-// import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react'
+import Roster from './Roster'
+import ClerkSelector from './ClerkSelector'
 
-// // Import functions responsible for fetching and saving data
-// import { fetchRosterData, saveRosterData } from './data'; // Replace './data' with your data access layer path
+interface RosteringAppState {
+  selectedClerkId: number | null
+  isClerkSelectorOpen: boolean
+}
 
-// interface StaffMember {
-//   id: number;
-//   name: string;
-//   // Add any other staff member properties
-// }
+const RosteringApp: React.FC = () => {
+  const [state, setState] = useState<RosteringAppState>({
+    selectedClerkId: null,
+    isClerkSelectorOpen: false,
+  })
 
-// interface Roster {
-//   [day: string]: { [time: string]: number | null }; // Key is day (string), value is object with time (string) as key and staff id (number) or null as value
-// }
+  const handleClerkSelect = (clerkId: number) => {
+    setState((prevState) => ({ ...prevState, selectedClerkId: clerkId }))
+    setIsClerkSelectorOpen(false) // Close popup
+  }
 
-// function RosteringApp() {
-//   const [startDate, setStartDate] = useState(() => {
-//     // Initialize start date with logic (e.g., new Date())
-//     return new Date();
-//   });
-//   const [roster, setRoster] = useState<Roster>({});
-//   const [error, setError] = useState<string | null>(null);
-//   const [isLoading, setIsLoading] = useState(false);
+  const handleOpenClerkSelector = () => {
+    setState((prevState) => ({ ...prevState, isClerkSelectorOpen: true }))
+  }
 
-//   // Function to handle changes in the schedule (called from StaffSelect)
-//   const handleShiftChange = (shift: { day: string; time: string }, staffId: number | null) => {
-//     const updatedRoster = { ...roster };
-//     updatedRoster[shift.day][shift.time] = staffId;
-//     setRoster(updatedRoster);
-//     // Save changes to backend (optional based on your requirements)
-//     saveRosterData(updatedRoster)
-//       .then(() => console.log('Roster saved successfully'))
-//       .catch((err) => console.error('Error saving roster:', err));
-//   };
+  const setIsClerkSelectorOpen = (isOpen: boolean) => {
+    setState((prevState) => ({ ...prevState, isClerkSelectorOpen: isOpen }))
+  }
 
-//   // Fetch roster data on component mount
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       setIsLoading(true);
-//       try {
-//         const fetchedRoster = await fetchRosterData();
-//         setRoster(fetchedRoster);
-//       } catch (err) {
-//         setError('Error fetching roster data');
-//       } finally {
-//         setIsLoading(false);
-//       }
-//     };
-//     fetchData();
-//   }, []);
+  return (
+    <div className="container">
+      {/* ... other UI elements */}
+      {!state.selectedClerkId && (
+        <button onClick={handleOpenClerkSelector}>Select Clerk</button>
+      )}
+      {state.isClerkSelectorOpen && (
+        <ClerkSelector
+          onSelect={handleClerkSelect}
+          onClose={() => setIsClerkSelectorOpen(false)}
+        />
+      )}
+      <Roster selectedClerkId={state.selectedClerkId} />
+    </div>
+  )
+}
 
-//   return (
-//     <div className="container">
-//       {isLoading ? (
-//         <p>Loading roster data...</p>
-//       ) : error ? (
-//         <p>Error: {error}</p>
-//       ) : (
-//         <WeekSchedule
-//           startDate={startDate}
-//           roster={roster}
-//           onShiftChange={handleShiftChange}
-//         />
-//       )}
-//     </div>
-//   );
-// }
-
-// export default RosteringApp;
+export default RosteringApp

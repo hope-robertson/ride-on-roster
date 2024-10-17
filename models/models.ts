@@ -11,6 +11,8 @@ export interface Shift {
   startTime: string
   endTime: string
   available: boolean
+  clerkId: number | null
+  clerkName: string | null
 }
 
 export interface RosterData {
