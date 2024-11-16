@@ -1,70 +1,79 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { fetchRoster } from '../apis/rosteringData'
-import { RosterData, Shift } from '../../models/models'
+import { RosterData } from '../../models/models'
 import useStore from '../../store'
-import { produce } from 'immer'
-import { create } from 'zustand'
 
-const Roster: React.FC<RosterProps> = ({ selectedClerkId, onSaveRoster }) => {
-  const { rosterData, setRosterData } = useStore()
+interface RosterProps {
+  onSaveRoster?: (updatedRoster: RosterData) => void // Optional callback function
+}
+
+const Roster: React.FC<RosterProps> = ({ onSaveRoster }) => {
+  const { selectedClerkId } = useStore()
+  const [rosterData, setRosterData] = useState<RosterData | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await fetchRoster()
         setRosterData(data)
+        setIsLoading(false)
       } catch (error) {
         console.error('Error fetching roster data:', error)
+        setError('Failed to fetch roster data')
+        setIsLoading(false)
       }
     }
 
-    fetchData() // Call the function on component mount
+    fetchData()
   }, [])
 
   const handleShiftSelect = (shiftId: number) => {
-    if (!rosterData || !selectedClerkId) return // Handle potential errors
+    if (!rosterData || !selectedClerkId) return
 
-    // Use Immer to update state immutably
-    setRosterData(
-      produce((draft) => {
-        const updatedShiftIndex = draft.shifts.findIndex(
-          (s) => s.id === shiftId,
-        )
-        if (updatedShiftIndex !== -1) {
-          draft.shifts[updatedShiftIndex] = {
-            ...draft.shifts[updatedShiftIndex],
-            clerkId: selectedClerkId,
-          }
+    const updatedShifts = rosterData.shifts.map((shift) => {
+      if (shift.id === shiftId) {
+        return {
+          ...shift,
+          clerkId: selectedClerkId,
+          clerkName: 'record store guy',
         }
-      }),
-    )
+      }
+      return shift
+    })
 
-    // Call the onSaveRoster callback if provided
-    onSaveRoster?.(rosterData) // Use the updated roster data from the store
+    setRosterData({
+      ...rosterData,
+      shifts: updatedShifts,
+    })
+
+    onSaveRoster?.({ ...rosterData, shifts: updatedShifts })
   }
 
-  if (!rosterData) {
+  if (isLoading) {
     return <p>Loading roster data...</p>
   }
 
-  const shifts: Shift[] = rosterData.shifts || [] // Handle empty shifts array
+  if (error) {
+    return <p>Error: {error}</p>
+  }
 
   return (
     <div>
       <h2>Roster</h2>
-      {/* Loop through the rosterData.shifts array and render each shift */}
-      {shifts.map((shift) => (
-        <div key={shift.day}>
-          <p
-            onClick={() => shift.available && handleShiftSelect(shift.id)} // Handle click only on available shifts
+      {rosterData?.shifts.map((shift) => (
+        <div key={shift.id}>
+          <button
+            disabled={!shift.available}
+            onClick={() => handleShiftSelect(shift.id)}
           >
             {shift.day}: {shift.startTime} - {shift.endTime} (
             {shift.available ? 'Available' : 'Unavailable'})
-            {/* Conditionally render clerk name or "Nobody" */}
             {shift.clerkId
               ? ` (Assigned to ${shift.clerkName})`
               : ' (Nobody assigned)'}
-          </p>
+          </button>
         </div>
       ))}
     </div>

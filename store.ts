@@ -6,6 +6,7 @@ interface AppState {
   selectedClerkId: number | null
   isClerkSelectorOpen: boolean
   rosterData: RosterData | null
+  setRosterData: (rosterData: RosterData) => void
 }
 
 const useStore = create<AppState>((set) => ({
@@ -14,6 +15,7 @@ const useStore = create<AppState>((set) => ({
   rosterData: null,
 
   // Actions to update state
+
   setSelectedClerkId: (clerkId: number) =>
     set(
       produce((draft) => {
@@ -28,7 +30,7 @@ const useStore = create<AppState>((set) => ({
     ),
   setRosterData: (rosterData: RosterData) =>
     set(
-      produce((draft) => {
+      produce((draft: AppState) => {
         draft.rosterData = rosterData
       }),
     ),
