@@ -1,13 +1,25 @@
 import React, { useEffect, useState } from 'react'
+import moment from 'moment'
 import { fetchRoster } from '../apis/rosteringData'
 import { RosterData } from '../../models/models'
 import useStore from '../../store'
 
 interface RosterProps {
+  selectedDate: Date
+  selectedClerkId: number | null
+  selectedWeekStart?: Date
   onSaveRoster?: (updatedRoster: RosterData) => void // Optional callback function
 }
 
 const Roster: React.FC<RosterProps> = ({ onSaveRoster }) => {
+  const isWithinWeek = (shift: any) => {
+    const shiftStart = moment(shift.startTime)
+    const weekStart = moment(selectedWeekStart).startOf('week')
+    const weekEnd = moment(selectedWeekStart).endOf('week')
+
+    return shiftStart.isBetween(weekStart, weekEnd, 'day', '[]')
+  }
+
   const { selectedClerkId } = useStore()
   const [rosterData, setRosterData] = useState<RosterData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -17,7 +29,12 @@ const Roster: React.FC<RosterProps> = ({ onSaveRoster }) => {
     const fetchData = async () => {
       try {
         const data = await fetchRoster()
-        setRosterData(data)
+        // filter shifts based on selectedWeekStart
+        const filteredShifts = selectedWeekStart
+          ? data.shifts.filter(isWithinWeek)
+          : data.shifts
+
+        setRosterData({ ...data, shifts: filteredShifts })
         setIsLoading(false)
       } catch (error) {
         console.error('Error fetching roster data:', error)
@@ -27,7 +44,7 @@ const Roster: React.FC<RosterProps> = ({ onSaveRoster }) => {
     }
 
     fetchData()
-  }, [])
+  }, [selectedWeekStart])
 
   const handleShiftSelect = (shiftId: number) => {
     if (!rosterData || !selectedClerkId) return

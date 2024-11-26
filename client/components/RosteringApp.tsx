@@ -6,6 +6,7 @@ import ClerkSelector from './ClerkSelector'
 
 interface RosteringAppState {
   selectedDate: Date
+  selectedWeekStart: Date
   selectedClerkId: number | null
   isClerkSelectorOpen: boolean
 }
@@ -13,6 +14,7 @@ interface RosteringAppState {
 const RosteringApp: React.FC = () => {
   const [state, setState] = useState<RosteringAppState>({
     selectedDate: new Date(),
+    selectedWeekStart: getWeekStart(new Date()),
     selectedClerkId: null,
     isClerkSelectorOpen: false,
   })
@@ -34,10 +36,18 @@ const RosteringApp: React.FC = () => {
     setState((prevState) => ({ ...prevState, isClerkSelectorOpen: isOpen }))
   }
 
+  function getWeekStart(date: Date): Date {
+    const weekStart = new Date(date)
+    weekStart.setDate(weekStart.getDate() - weekStart.getDay() + 1)
+    return weekStart
+  }
+
   return (
     <div className="container">
-      <Calendar onChange={handleDateChange} value={state.selectedDate} />
-
+      <Calendar
+        onChange={(date) => setState({ ...state, selectedDate: date })}
+        value={state.selectedDate}
+      />
       {!state.selectedClerkId && (
         <button onClick={handleOpenClerkSelector}>Select Clerk</button>
       )}
@@ -56,3 +66,5 @@ const RosteringApp: React.FC = () => {
     </div>
   )
 }
+
+export default RosteringApp
