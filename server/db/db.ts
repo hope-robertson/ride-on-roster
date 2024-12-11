@@ -21,3 +21,15 @@ export async function saveRosterDB(rosterData: RosterData) {
     throw new Error('Failed to save roster data')
   }
 }
+
+export async function createShiftAssignment(shiftId: number, clerkId: number) {
+  try {
+    await knex('shift_assignments').insert({
+      shift_id: shiftId,
+      clerk_id: clerkId,
+      assigned_at: knex.fn.now(),
+    })
+  } catch (error) {
+    throw new Error('Failed to create shift assignment')
+  }
+}
