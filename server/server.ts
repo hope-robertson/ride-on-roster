@@ -1,4 +1,6 @@
 import express from 'express'
+import shiftAssignmentRoutes from './routes/shiftAssignments' // Import the new route
+
 // import * from 'node:path'; // For path resolution
 
 import rosterRoutes from './routes/roster.ts' // Import the roster routes
