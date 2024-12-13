@@ -8,17 +8,20 @@ export async function up(knex) {
       .foreign('shift_id')
       .references('id')
       .inTable('shifts')
-      .onDelete('CASCADE') // SQLite syntax
+      .onDelete('CASCADE')
     table.integer('clerk_id').unsigned().notNullable()
     table
       .foreign('clerk_id')
       .references('id')
       .inTable('clerks')
-      .onDelete('CASCADE') // SQLite syntax
+      .onDelete('CASCADE')
+    table.date('week_start_date').notNullable()
     table.timestamp('assigned_at').defaultTo(knex.fn.now())
   })
 }
 
 export async function down(knex) {
-  await knex.schema.dropTable('shift_assignments')
+  await knex.schema.table('shift_assignments', (table) => {
+    table.dropColumn('week_start_date')
+  })
 }
