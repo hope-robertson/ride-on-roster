@@ -4,7 +4,7 @@ export async function up(knex) {
   await knex.schema.createTable('roster', (table) => {
     table.increments('id').primary()
     table.date('startDate').notNullable()
-    table.jsonb('shifts').notNullable() // Store shifts as a JSON array
+    table.text('shifts').notNullable() // Use TEXT column to store shifts as JSON string
   })
 }
 
