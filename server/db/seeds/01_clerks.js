@@ -9,6 +9,7 @@ export async function seed(knex) {
     { name: 'Daniel' },
     { name: 'Harry' },
     { name: 'Raven' },
+    { name: 'Jonathan' },
 
     // ... other employees
   ])
