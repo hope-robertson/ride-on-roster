@@ -3,6 +3,6 @@
 
 export async function seed(knex) {
   await knex('roster').insert({
-    startDate: new Date(),
+    start_date: new Date(),
   })
 }
