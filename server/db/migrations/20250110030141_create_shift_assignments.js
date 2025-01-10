@@ -13,13 +13,10 @@ export async function up(knex) {
       .references('id')
       .inTable('clerks')
       .onDelete('CASCADE')
-    table.date('week_start_date').notNullable()
     table.timestamp('assigned_at').defaultTo(knex.fn.now())
   })
 }
 
 export async function down(knex) {
-  await knex.schema.table('shift_assignments', (table) => {
-    table.dropColumn('week_start_date')
-  })
+  await knex.schema.dropTable('shift_assignments')
 }

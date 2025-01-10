@@ -13,7 +13,7 @@ const knex = Knex({
 export async function fetchRosterDB(): Promise<RosterData> {
   try {
     console.log('Fetching roster data from database')
-    const roster = await knex('roster').where({ id: 1 }).first<RosterData>() // Type as RosterData
+    const roster = await knex('roster').where({ id: 1 }).first<RosterData>()
     console.log('Fetched roster data:', roster)
     return roster
   } catch (error) {
@@ -32,10 +32,17 @@ export async function saveRosterDB(rosterData: RosterData) {
 
 export async function createShiftAssignment(shiftId: number, clerkId: number) {
   try {
-    await knex('shift_assignments').insert({
+    // Get the current date (assuming you want the start of the current week)
+    const today = new Date()
+    const currentWeekStart = today.setDate(
+      today.getDate() - ((today.getDay() || 7) % 7),
+    ) // Adjust for weekday (Sunday=0)
+
+    await knex('create_shift_assignments').insert({
       shift_id: shiftId,
       clerk_id: clerkId,
-      assigned_at: raw('CURRENT_TIMESTAMP'), // Use raw SQL for platform-specific function
+      assigned_at: raw('CURRENT_TIMESTAMP'),
+      week_start_date: currentWeekStart,
     })
   } catch (error) {
     throw new Error('Failed to create shift assignment')
