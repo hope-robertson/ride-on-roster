@@ -1,5 +1,3 @@
-// server/db/migrations/20241211061846_create_shift_assignments.js
-
 export async function up(knex) {
   await knex.schema.createTable('shift_assignments', (table) => {
     table.increments('id').primary()

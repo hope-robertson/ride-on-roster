@@ -2,7 +2,13 @@ import raw from 'knex'
 import Knex from 'knex'
 import { RosterData } from '../../models/models'
 
-const knex = Knex // Assuming you have a knexfile.js configured
+const knex = Knex({
+  client: 'sqlite3',
+  useNullAsDefault: true,
+  connection: {
+    filename: './dev.sqlite3',
+  },
+})
 
 export async function fetchRosterDB(): Promise<RosterData> {
   try {
@@ -11,6 +17,7 @@ export async function fetchRosterDB(): Promise<RosterData> {
     console.log('Fetched roster data:', roster)
     return roster
   } catch (error) {
+    console.error('Error fetching roster data:', error)
     throw new Error('Failed to fetch roster data')
   }
 }
