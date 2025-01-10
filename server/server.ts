@@ -1,15 +1,12 @@
 import express from 'express'
-import shiftAssignmentRoutes from './routes/shiftAssignments' // Import the new route
-import rosterRoutes from './routes/roster.ts' // Import the roster routes
+import shiftAssignmentRoutes from './routes/shiftAssignments'
 
 const app = express()
 app.use(express.json()) // Parse incoming JSON data
 
-// Mount your roster routes
-app.use('/api/v1/roster', rosterRoutes)
-app.use('/api/v1/shiftAssignments', shiftAssignmentRoutes)
+console.log('Server starting...')
 
-// ... other routes or middleware (if applicable)
+app.use('/api/v1', shiftAssignmentRoutes)
 
 // Production environment serving static assets
 if (process.env.NODE_ENV === 'production') {
